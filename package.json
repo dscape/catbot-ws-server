@@ -1,0 +1,27 @@
+{
+  "name": "catroulette",
+  "version": "0.0.0",
+  "description": "catroulette ===========",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dscape/catroulette.git"
+  },
+  "author": "",
+  "license": "apache 2",
+  "bugs": {
+    "url": "https://github.com/dscape/catroulette/issues"
+  },
+  "dependencies": {
+    "primus-emitter": "~0.1.0",
+    "node-static": "~0.7.0",
+    "primus": "~1.1.0",
+    "ws": "~0.4.27",
+    "catbot": "0.0.0",
+    "rtc": "~0.1.0"
+  }
+}
