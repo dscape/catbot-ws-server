@@ -28,6 +28,7 @@ $(function() {
 
     socket.on('laserStatus', function (laserOn) {
       $('#logo').text(laserOn ? 'Turn off Laser' : 'Turn on Laser')
+      $('#logo').css('background-color', laserOn ? '#e00' : '#aaa')
     });
 
     //
