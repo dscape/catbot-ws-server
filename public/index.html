@@ -7,16 +7,16 @@
     <link rel="stylesheet" href="/css/schwag.css">
     <script src="/primus/primus.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="/js/noprefix.js"></script>
-    <script src="/js/getusermedia.js"></script>
+    <script src="/js/jqueryui.js"></script>
     <script src="/js/app.js"></script>
     <title>cat roulette</title>
   </head>
   <body>
-    <div id="panel"></div>
-    <div id="cam">
-      <canvas id="capture" hidden></canvas>
-      <video id="webcam" autoplay="autoplay"></video>
+    <div id="panel">
+      <div id="pointer_panel">
+          <div id="pointer"></div>
+      </div>
+      <div id="content" class="log" style=""></div>
     </div>
     <div id="logo">catroulette (meow edition)</div>
   </body>

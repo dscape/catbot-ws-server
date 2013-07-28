@@ -20,71 +20,15 @@ var app = require('http').createServer(function (request, response) {
 var server = new Primus(app, { transformer: 'websockets', parser: 'JSON' });
 server.use('emitter', Emitter);
 
-function pair(nickname) {
-  var remote = free.pop()
-    , socket = sockets[nickname]
-    ;
-  if (remote && remote !== nickname) {
-    console.log('remove ' + remote + ' from the queue');
-    var remoteSocket = sockets[remote];
-    if(!remoteSocket) {
-      return process.nextTick(function () { pair(nickname); });
-    }
-    remoteSocket.on('frame', function emitFrameToPairRemote(frame) {
-      socket.emit('drawFrame', frame);
-    });
-    socket.on('frame', function emitDrawFrameClient(frame) {
-      remoteSocket.emit('drawFrame', frame);
-    });
-    paired[nickname] = remote;
-    paired[remote]   = nickname;
-    console.log('paired ' + nickname + ' with ' + remote + '.');
-    socket.emit('paired');
-    remoteSocket.emit('paired');
-  } else {
-    app.log.info('added ' + nickname + ' to the queue');
-    free.push(nickname);
-  }
-}
-
-function next(nickname, disconnected) {
-  var remote = paired[nickname]
-    , socket = sockets[nickname]
-    ;
-  delete paired[nickname];
-  console.log('listeners removed for ' + nickname);
-  socket.removeAllListeners('frame');
-  socket.emit('unpaired');
-  if(!disconnected) {
-    pair(nickname);
-  }
-  if(remote) {
-    delete paired[remote];
-    var remoteSocket = sockets[remote];
-    console.log('listeners removed for ' + remote);
-    remoteSocket.removeAllListeners('frame');
-    remoteSocket.emit('unpaired');
-    pair(remote);
-  }
-}
-
 function handle_connections(err, hardware) {
   if (err) {
     throw err;
   }
 
   server.on('connection', function (socket) {
-    console.log('connected: ' + socket.id);
+    console.log((hardware ? 'cat' : 'human') + ': ' + socket.id);
 
-    socket.on('disconnect', function disconnect() {
-      console.log('disconnected: ' + socket.id);
-      next(socket.id, true);
-      delete sockets[socket.id];
-    });
-
-    socket.on('next', function () {
-      next(socket.id, false);
-    });
+    socket.emit('laserStatus', hardware && hardware.laser.isOn);
 
     socket.on('x', function (x) {
       if(!hardware) return;
@@ -101,12 +45,14 @@ function handle_connections(err, hardware) {
     socket.on('switchLaser', function () {
       if(!hardware) return;
       hardware.laser.isOn ? hardware.laser.off() : hardware.laser.on();
+      socket.emit('laserStatus', hardware.laser.isOn);
     });
   });
 }
 
+//
+// humans currently not supported
+//
 if(ircat) {
   cat(handle_connections);
-} else {
-  handle_connections();
 }

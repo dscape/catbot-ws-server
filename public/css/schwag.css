@@ -1,23 +1,13 @@
 body {
-  position : absolute;
-  width    : 100%;
-  height   : 100%;
-}
-
-#cam {
-  z-index  : 500;
-  position : fixed;
+  position                : absolute;
+  width                   : 100%;
+  height                  : 100%;
 }
 
 body, html, canvas, video {
-  border  : 0px;
-  padding : 0px;
-  margin  : 0px;
-}
-
-#webcam, canvas {
-  height : 120px;
-  width  : 146px;
+  border                  : 0px;
+  padding                 : 0px;
+  margin                  : 0px;
 }
 
 #panel {
@@ -35,22 +25,40 @@ body, html, canvas, video {
   background-size         : cover;
   cursor                  : pointer !important;
   text-indent             : -9999em;
-  cursor                  : pointer !important;
 }
 
 #logo {
-  z-index             : 1000;
-  position            : fixed;
-  padding             : 0 5px;
-  left                : 0;
-  top                 : 0;
-  background-color    : #e60000;
-  background-repeat   : no-repeat;
-  background-position : center center;
-  display             : block;
-  color               : #fff;
-  text-align          : center;
-  vertical-align      : middle;
-  font-size           : 32px;
-  font-family         : 'Six Caps', sans-serif;
+  cursor                  : pointer !important;
+  z-index                 : 1000;
+  position                : fixed;
+  padding                 : 0 5px;
+  right                   : 0;
+  top                     : 0;
+  background-color        : #e60000;
+  background-repeat       : no-repeat;
+  background-position     : center center;
+  display                 : block;
+  color                   : #fff;
+  text-align              : center;
+  vertical-align          : middle;
+  font-size               : 32px;
+  font-family             : 'Six Caps', sans-serif;
+}
+
+#pointer_panel {
+  width                   : 20px;
+  height                  : 20px;
+  left                    : 0;
+  top                     : 0;
+  z-index                 : 1001;
+  position                : absolute;
+}
+
+#pointer {
+  width                   : 20px;
+  height                  : 20px;
+  border                  : 1px solid #f30;
+  background-color        : #fc0;
+  border-radius           : 50%;
+  z-index                 : 1002;
 }
