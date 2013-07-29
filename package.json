@@ -19,8 +19,7 @@
   "dependencies": {
     "primus-emitter": "~0.1.0",
     "node-static": "~0.7.0",
-    "primus": "~1.1.0",
-    "ws": "~0.4.27",
-    "catbot": "0.0.0"
+    "primus": "~1.1.2",
+    "ws": "~0.4.27"
   }
 }

@@ -1,8 +1,5 @@
 $(function() {
-  var socket      = Primus.connect('ws://localhost:8080')
-    //
-    // w/h of the web client controll boundaries
-    //
+  var socket = Primus.connect('ws://localhost:8080')
     , sceneX = 598
     , sceneY = 378
     , slideX
@@ -10,6 +7,8 @@ $(function() {
     ;
 
   socket.on('open', function () {
+
+    socket.emit('i am a person');
 
     $("#pointer").draggable(
       { containment: "#pointerCont"
@@ -19,16 +18,24 @@ $(function() {
             , posX = position.left / sceneX
             , posY = position.top / sceneY
             ;
-
-          console.log('x: ', posX, 'y: ', posY);
           socket.emit('x', posX);
           socket.emit('y', posY);
         }
     });
 
     socket.on('laserStatus', function (laserOn) {
-      $('#logo').text(laserOn ? 'Turn off Laser' : 'Turn on Laser')
-      $('#logo').css('background-color', laserOn ? '#e00' : '#aaa')
+      console.log('laserStatus');
+      $('#logo').text(laserOn ? 'Turn off Laser' : 'Turn on Laser');
+      $('#logo').css('background-color', laserOn ? '#e00' : '#aaa');
+    });
+
+    socket.on('paired', function () {
+      console.log('paired');
+    });
+
+    socket.on('unpaired', function () {
+      $('#logo').css('background-color', '#00e');
+      $('#logo').text('waiting for meow');
     });
 
     //

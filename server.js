@@ -1,17 +1,11 @@
 var s       = require('node-static')
   , Primus  = require('primus')
   , Emitter = require('primus-emitter')
-  , cat     = require('catbot')
   , file    = new(s.Server)('./public')
-  , ircat   = process.env.IARECATZ
-  , sockets = {}
-  , free    = []
-  , paired  = {}
+  , paired  = require('./lib/paired')
   ;
 
 var app = require('http').createServer(function (request, response) {
-  console.log(request.url);
-
   request.addListener('end', function () {
       file.serve(request, response);
   }).resume();
@@ -20,39 +14,52 @@ var app = require('http').createServer(function (request, response) {
 var server = new Primus(app, { transformer: 'websockets', parser: 'JSON' });
 server.use('emitter', Emitter);
 
-function handle_connections(err, hardware) {
-  if (err) {
-    throw err;
-  }
+var engine       = paired(function (sockets) {
+  var cat        = sockets.cat
+    , person     = sockets.person
+    ;
 
-  server.on('connection', function (socket) {
-    console.log((hardware ? 'cat' : 'human') + ': ' + socket.id);
-
-    socket.emit('laserStatus', hardware && hardware.laser.isOn);
-
-    socket.on('x', function (x) {
-      if(!hardware) return;
-      console.log('x: ' + x);
-      hardware.x.move(Math.floor(x*180));
-    });
-
-    socket.on('y', function (y) {
-      if(!hardware) return;
-      console.log('y: ' + y);
-      hardware.y.move(Math.floor(y*180));
-    });
-
-    socket.on('switchLaser', function () {
-      if(!hardware) return;
-      hardware.laser.isOn ? hardware.laser.off() : hardware.laser.on();
-      socket.emit('laserStatus', hardware.laser.isOn);
-    });
+  person.on('switchLaser', function () {
+    cat.emit('switchLaser');
   });
-}
 
-//
-// humans currently not supported
-//
-if(ircat) {
-  cat(handle_connections);
-}
+  person.on('x', function (x) {
+    cat.emit('x', x);
+  });
+
+  person.on('y', function (y) {
+    cat.emit('y', y);
+  });
+
+  cat.on('laserStatus', function (status) {
+    person.emit('laserStatus', status);
+  });
+
+}, ['switchLaser', 'x', 'y', 'laserStatus']);
+
+server.on('connection', function (socket) {
+  console.log('+ ' + socket.id);
+
+  //
+  // oh mah ceilin we haz kat!
+  //
+  socket.on('im kat', function (status) {
+    console.log('meow: ' + socket.id);
+    socket._type = 'cat'
+    engine.pair(socket);
+  });
+
+  //
+  // people are people too you know!1!
+  //
+  socket.on('i am a person', function () {
+    console.log('hi: ' + socket.id);
+    socket._type = 'person'
+    engine.pair(socket);
+  });
+});
+
+server.on('disconnection', function (socket) {
+  console.log('- ' + socket.id);
+  engine.next(socket, true);
+});
